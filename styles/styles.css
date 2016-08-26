@@ -182,7 +182,7 @@ pdf-document {
 }
 
 pdf-document .pdf-container {
-    background-color: #ccc;
+    background-color: #bbb;
     overflow: auto;
     height: 100%;
     height: 600px;
@@ -192,8 +192,7 @@ pdf-document .pdf-container {
 pdf-document canvas {
     background-color: #fff;
     border: 1px solid #000;
-    margin: 5%;
-    margin-collapse: collapse;
+    margin: 5px;
 }
 
 .pdf-toolbar {
