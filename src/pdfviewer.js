@@ -1,0 +1,43 @@
+
+
+export class PdfViewer {
+    constructor () {
+        this.pageNumber = 1;
+        this.scale = 1;
+        this.lastpage = 1;
+    }
+
+    firstPage () {
+        this.pageNumber = 1;
+    }
+
+    nextPage () {
+        if (this.pageNumber >= this.lastpage) return;
+
+        this.pageNumber += 1;
+    }
+
+    prevPage () {
+        if (this.pageNumber <= 1) return;
+
+        this.pageNumber -= 1;
+    }
+
+    lastPage () {
+        this.pageNumber = this.lastpage;
+    }
+
+    goToPage (page) {
+        if (page <= 0 || page > this.lastpage) return;
+
+        this.pageNumber = page;
+    }
+
+    zoomIn () {
+        this.scale += 0.1;
+    }
+
+    zoomOut () {
+        this.scale -= 0.1;
+    }
+}
