@@ -19,10 +19,15 @@ System.register([], function (_export, _context) {
                     _classCallCheck(this, PdfViewer);
 
                     this.url = 'dist/documents/oversize_pdf_test_0.pdf';
+                    this.draftUrl = 'dist/documents/oversize_pdf_test_0.pdf';
                     this.pageNumber = 1;
                     this.scale = 1;
                     this.lastpage = 1;
                 }
+
+                PdfViewer.prototype.loadUrl = function loadUrl() {
+                    this.url = this.draftUrl;
+                };
 
                 PdfViewer.prototype.firstPage = function firstPage() {
                     this.pageNumber = 1;
@@ -51,11 +56,11 @@ System.register([], function (_export, _context) {
                 };
 
                 PdfViewer.prototype.zoomIn = function zoomIn() {
-                    this.scale += 0.1;
+                    this.scale = Number(this.scale) + 0.1;
                 };
 
                 PdfViewer.prototype.zoomOut = function zoomOut() {
-                    this.scale -= 0.1;
+                    this.scale = Number(this.scale) - 0.1;
                 };
 
                 return PdfViewer;

@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['aurelia-framework', 'pdfjs-dist'], function (_export, _context) {
+System.register(['aurelia-framework', 'pdfjs-dist', 'aurelia-templating-binding'], function (_export, _context) {
     "use strict";
 
-    var customElement, bindable, inject, bindingMode, TaskQueue, PDFJS, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, PdfDocument, checkIfElementVisible, render;
+    var customElement, bindable, inject, bindingMode, TaskQueue, PDFJS, SyntaxInterpreter, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, PdfDocument, checkIfElementVisible, render;
 
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
@@ -20,8 +20,12 @@ System.register(['aurelia-framework', 'pdfjs-dist'], function (_export, _context
             TaskQueue = _aureliaFramework.TaskQueue;
         }, function (_pdfjsDist) {
             PDFJS = _pdfjsDist.PDFJS;
+        }, function (_aureliaTemplatingBinding) {
+            SyntaxInterpreter = _aureliaTemplatingBinding.SyntaxInterpreter;
         }],
         execute: function () {
+            SyntaxInterpreter.prototype.trigger2 = SyntaxInterpreter.prototype.trigger;
+
             _export('PdfDocument', PdfDocument = (_dec = customElement('pdf-document'), _dec2 = bindable({ name: 'url' }), _dec3 = bindable({ name: 'page', defaultValue: 1, defaultBindingMode: bindingMode.twoWay }), _dec4 = bindable({ name: 'lastpage', defaultValue: 1, defaultBindingMode: bindingMode.twoWay }), _dec5 = bindable({ name: 'scale', defaultValue: 1, defaultBindingMode: bindingMode.twoWay }), _dec6 = inject(TaskQueue), _dec(_class = _dec2(_class = _dec3(_class = _dec4(_class = _dec5(_class = _dec6(_class = function () {
                 function PdfDocument(taskQueue) {
                     _classCallCheck(this, PdfDocument);
@@ -94,10 +98,25 @@ System.register(['aurelia-framework', 'pdfjs-dist'], function (_export, _context
                     });
                 };
 
-                PdfDocument.prototype.pageChanged = function pageChanged(newValue, oldValue) {};
+                PdfDocument.prototype.pageChanged = function pageChanged(newValue, oldValue) {
+                    var _this2 = this;
+
+                    if (newValue === oldValue || isNaN(Number(newValue)) || Number(newValue) > this.lastpage || Number(newValue) < 0) {
+                        this.page = oldValue;
+                        return;
+                    }
+
+                    console.log("threshold", Math.abs(newValue - oldValue));
+                    if (Math.abs(newValue - oldValue) <= 1) return;
+
+                    this.pages[newValue - 1].then(function (renderObject) {
+                        _this2.container.scrollTop = renderObject.element.offsetTop;
+                        render(_this2.pages[newValue - 1], _this2.scale);
+                    });
+                };
 
                 PdfDocument.prototype.scaleChanged = function scaleChanged(newValue, oldValue) {
-                    var _this2 = this;
+                    var _this3 = this;
 
                     if (newValue === oldValue || isNaN(Number(newValue))) return;
 
@@ -109,19 +128,23 @@ System.register(['aurelia-framework', 'pdfjs-dist'], function (_export, _context
 
                             renderObject.rendered = false;
 
-                            _this2.taskQueue.queueMicroTask(function () {
+                            _this3.taskQueue.queueMicroTask(function () {
                                 renderObject.element.height = viewport.height;
                                 renderObject.element.width = viewport.width;
+
+                                if (renderObject.page.pageNumber === _this3.page) {
+                                    _this3.container.scrollTop = renderObject.element.offsetTop;
+                                }
                             });
                         });
 
                         return values;
                     }).then(function (values) {
-                        _this2.pages.forEach(function (page) {
+                        _this3.pages.forEach(function (page) {
                             page.then(function (renderObject) {
-                                _this2.taskQueue.queueMicroTask(function () {
-                                    if (checkIfElementVisible(_this2.container, renderObject.element)) {
-                                        render(page, _this2.scale);
+                                _this3.taskQueue.queueMicroTask(function () {
+                                    if (checkIfElementVisible(_this3.container, renderObject.element)) {
+                                        render(page, _this3.scale);
                                     }
                                 });
                             });
@@ -129,26 +152,26 @@ System.register(['aurelia-framework', 'pdfjs-dist'], function (_export, _context
                     });
                 };
 
-                PdfDocument.prototype.scrollHandler = function scrollHandler() {
-                    var _this3 = this;
+                PdfDocument.prototype.pageHandler = function pageHandler() {
+                    var _this4 = this;
 
                     this.pages.forEach(function (page) {
                         page.then(function (renderObject) {
-                            if (_this3.container.scrollTop + _this3.container.clientHeight >= renderObject.element.offsetTop && _this3.container.scrollTop <= renderObject.element.offsetTop) {
-                                _this3.page = renderObject.page.pageNumber;
+                            if (_this4.container.scrollTop + _this4.container.clientHeight >= renderObject.element.offsetTop && _this4.container.scrollTop <= renderObject.element.offsetTop) {
+                                _this4.page = renderObject.page.pageNumber;
                             }
                         });
                     });
                 };
 
                 PdfDocument.prototype.renderHandler = function renderHandler() {
-                    var _this4 = this;
+                    var _this5 = this;
 
                     Promise.all(this.pages).then(function (values) {
                         values.forEach(function (renderObject) {
                             if (!renderObject) return;
 
-                            if (!checkIfElementVisible(_this4.container, renderObject.element)) {
+                            if (!checkIfElementVisible(_this5.container, renderObject.element)) {
                                 if (renderObject.rendered && renderObject.clean) {
                                     renderObject.page.cleanup();
                                     renderObject.clean = true;
@@ -157,9 +180,9 @@ System.register(['aurelia-framework', 'pdfjs-dist'], function (_export, _context
                                 return;
                             }
 
-                            _this4.taskQueue.queueMicroTask(function () {
+                            _this5.taskQueue.queueMicroTask(function () {
                                 if (renderObject.rendered) return;
-                                render(renderObject, _this4.scale);
+                                render(renderObject, _this5.scale);
                             });
                         });
                     });

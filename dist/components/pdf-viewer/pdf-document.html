@@ -1,1 +1,1 @@
-<template><div ref="container" class="pdf-container" scroll.trigger="renderHandler() & debounce:150"><div repeat.for="page of lastpage" class="text-center"><canvas id="${'pdfCanvas' + (page + 1)}"></canvas></div></div></template>
+<template><div ref="container" class="pdf-container" scroll.trigger="pageHandler()" scroll.trigger2="renderHandler() & debounce:100"><div repeat.for="page of lastpage" class="text-center"><canvas id="${'pdfCanvas' + (page + 1)}"></canvas></div></div></template>
