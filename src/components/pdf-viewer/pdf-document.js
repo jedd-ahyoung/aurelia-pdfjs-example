@@ -12,52 +12,12 @@ export class PdfDocument {
         this.taskQueue = taskQueue;
         PDFJS.workerSrc = '/jspm_packages/npm/pdfjs-dist@1.5.391/build/pdf.worker.js';
 
-        var resolveDocumentPending;
-        this.documentPending = new Promise(function (resolve, reject) {
-            resolveDocumentPending = resolve.bind(this);
-        });
-
         this.pages = [];
         this.scrollTop = {};
         this.offsetTop = {};
 
         this.currentPage = null;
-        this.resolveDocumentPending = resolveDocumentPending;
-    }
-
-    attached () {
-        return this.documentPending
-            .then((pdf) => {
-                pdf.cleanupAfterRender = true;
-                for (var i = 0; i < pdf.numPages; i++) {
-                    this.pages[i] = pdf.getPage(Number(i + 1))
-                        .then((page) => {
-                            var viewport = page.getViewport(this.scale);
-                            var element = document.getElementById('pdfCanvas' + page.pageNumber);
-
-                            this.taskQueue.queueMicroTask(() => {
-                                element.height = viewport.height;
-                                element.width = viewport.width;
-                            });
-
-                            return {
-                                element: element,
-                                page: page,
-                                rendered: false
-                            };
-                        })
-                }
-
-                this.pages.forEach((page) => {
-                    page.then((renderObject) => {
-                        if (checkIfElementVisible(this.container, renderObject.element))
-                        {
-                            if (renderObject.rendered) return;
-                            render(page, this.scale);
-                        }
-                    });
-                });
-            });
+        this.resolveDocumentPending;
     }
 
     detached () {
@@ -72,9 +32,52 @@ export class PdfDocument {
     urlChanged (newValue, oldValue) {
         if (newValue === oldValue) return;
 
-        return PDFJS.getDocument(newValue)
+		var promise = this.documentPending || Promise.resolve();
+		this.documentPending = new Promise((resolve, reject) => {
+            this.resolveDocumentPending = resolve.bind(this);
+        });
+
+        return promise
+			.then((pdf) => {
+				if (pdf) {
+					pdf.destroy();
+				}
+				return PDFJS.getDocument(newValue);
+			})
             .then((pdf) => {
                 this.lastpage = pdf.numPages;
+
+				pdf.cleanupAfterRender = true;
+                for (var i = 0; i < pdf.numPages; i++) {
+                    this.pages[i] = pdf.getPage(Number(i + 1))
+                        .then((page) => {
+                            var viewport = page.getViewport(this.scale);
+                            var element = document.getElementById('pdfCanvas' + page.pageNumber);
+
+                            this.taskQueue.queueMicroTask(() => {
+                                element.height = viewport.height;
+                                element.width = viewport.width;
+                            });
+
+                            return {
+                                element: element,
+                                page: page,
+                                rendered: false,
+								clean: false
+                            };
+                        })
+                }
+
+                this.pages.forEach((page) => {
+                    page.then((renderObject) => {
+                        if (checkIfElementVisible(this.container, renderObject.element))
+                        {
+                            if (renderObject.rendered) return;
+                            render(page, this.scale);
+                        }
+                    });
+                });
+
                 this.resolveDocumentPending(pdf);
             });
     }
@@ -148,8 +151,9 @@ export class PdfDocument {
 
                     if (!checkIfElementVisible(this.container, renderObject.element))
                     {
-                        if (renderObject.rendered) {
+                        if (renderObject.rendered && renderObject.clean) {
                             renderObject.page.cleanup();
+							renderObject.clean = true;
                         }
 
                         return;
