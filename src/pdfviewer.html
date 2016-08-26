@@ -12,9 +12,9 @@
 	        <div class="col-xs-12">
 	            <pdf-document url.bind="url" page.bind="pageNumber" lastpage.bind="lastpage" scale.bind="scale"></pdf-document>
 
-	            <div style="position: absolute; top: 0; left: 0; right: 0;">
-	                <div class="pdf-toolbar">
-	                    Page ${pageNumber} of ${lastpage};
+	            <div style="position: absolute; top: 3em; left: 50%; right: 50%;">
+	                <div class="pdf-toolbar text-center">
+	                    Page ${pageNumber} of ${lastpage}
 	                    <button click.delegate="zoomIn()" class="btn btn-link">
 	                        <i class="fa fa-plus"></i>
 	                    </button>
