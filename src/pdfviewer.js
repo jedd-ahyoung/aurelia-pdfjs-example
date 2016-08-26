@@ -2,6 +2,7 @@
 
 export class PdfViewer {
     constructor () {
+		this.url = 'dist/documents/oversize_pdf_test_0.pdf';
         this.pageNumber = 1;
         this.scale = 1;
         this.lastpage = 1;

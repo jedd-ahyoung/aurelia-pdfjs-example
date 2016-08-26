@@ -1,21 +1,29 @@
 <template>
     <require from="components/pdf-viewer/pdf-document"></require>
 
-    <div class="row">
-        <div class="col-xs-12">
-            <pdf-document url="dist/documents/pdf.pdf" page.bind="pageNumber" lastpage.bind="lastpage" scale.bind="scale"></pdf-document>
+	<section>
+	    <div class="row">
+			<div class="col-xs-12">
+				<div class="form-group">
+					<label for="url">URL:</label>
+					<input id="url" type="text" class="form-control" value.bind="url & updateTrigger:'blur':'paste'" />
+				</div>
+			</div>
+	        <div class="col-xs-12">
+	            <pdf-document url.bind="url" page.bind="pageNumber" lastpage.bind="lastpage" scale.bind="scale"></pdf-document>
 
-            <div style="position: absolute; top: 0; left: 0; right: 0;">
-                <div class="pdf-toolbar">
-                    Page ${pageNumber} of ${lastpage};
-                    <button click.delegate="zoomIn()" class="btn btn-link">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                    <button click.delegate="zoomOut()" class="btn btn-link">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+	            <div style="position: absolute; top: 0; left: 0; right: 0;">
+	                <div class="pdf-toolbar">
+	                    Page ${pageNumber} of ${lastpage};
+	                    <button click.delegate="zoomIn()" class="btn btn-link">
+	                        <i class="fa fa-plus"></i>
+	                    </button>
+	                    <button click.delegate="zoomOut()" class="btn btn-link">
+	                        <i class="fa fa-minus"></i>
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</section>
 </template>
