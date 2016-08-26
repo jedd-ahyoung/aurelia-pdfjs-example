@@ -117,13 +117,12 @@ export class PdfDocument {
             .then((values) => {
                 this.pages.forEach((page) => {
                     page.then((renderObject) => {
-                        if (checkIfElementVisible(this.container, renderObject.element))
-                        {
-                            if (renderObject.rendered) return;
-							this.taskQueue.queueMicroTask(() => {
+						this.taskQueue.queueMicroTask(() => {
+							if (checkIfElementVisible(this.container, renderObject.element))
+	                        {
 	                            render(page, this.scale);
-							});
-                        }
+							}
+						});
                     });
                 });
             });
