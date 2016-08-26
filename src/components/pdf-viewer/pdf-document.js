@@ -85,18 +85,19 @@ export class PdfDocument {
     }
 
     pageChanged (newValue, oldValue) {
-        // if (newValue === oldValue || isNaN(Number(newValue)) || Number(newValue) > this.lastpage || Number(newValue) < 0) {
-        //     this.page = oldValue;
-        //     return;
-        // }
-        //
-        // return this.documentPending
-        //     .then((pdf) => {
-        //         return this.pages[newValue]
-        //             .then((renderObject) => {
-        //                 this.container.scrollTop = renderObject.element.offsetTop;
-        //             });
-        //     });
+        if (newValue === oldValue || isNaN(Number(newValue)) || Number(newValue) > this.lastpage || Number(newValue) < 0) {
+            this.page = oldValue;
+            return;
+        }
+
+		console.log("threshold", Math.abs(newValue - oldValue));
+		if (Math.abs(newValue - oldValue) <= 1) return;
+
+        this.pages[newValue - 1]
+			.then((renderObject) => {
+				this.container.scrollTop = renderObject.element.offsetTop;
+				render(this.pages[newValue - 1], this.scale);
+			});
     }
 
     scaleChanged (newValue, oldValue) {

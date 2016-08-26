@@ -3,10 +3,15 @@
 export class PdfViewer {
     constructor () {
 		this.url = 'dist/documents/oversize_pdf_test_0.pdf';
+		this.draftUrl = 'dist/documents/oversize_pdf_test_0.pdf';
         this.pageNumber = 1;
         this.scale = 1;
         this.lastpage = 1;
     }
+
+	loadUrl () {
+		this.url = this.draftUrl;
+	}
 
     firstPage () {
         this.pageNumber = 1;
@@ -35,10 +40,10 @@ export class PdfViewer {
     }
 
     zoomIn () {
-        this.scale += 0.1;
+        this.scale = Number(this.scale) + 0.1;
     }
 
     zoomOut () {
-        this.scale -= 0.1;
+        this.scale = Number(this.scale) - 0.1;
     }
 }
