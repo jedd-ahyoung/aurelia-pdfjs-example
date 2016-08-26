@@ -10,7 +10,7 @@ import {PDFJS} from 'pdfjs-dist';
 export class PdfDocument {
     constructor (taskQueue) {
         this.taskQueue = taskQueue;
-        PDFJS.workerSrc = '/jspm_packages/npm/pdfjs-dist@1.5.391/build/pdf.worker.js';
+        PDFJS.workerSrc = 'jspm_packages/npm/pdfjs-dist@1.5.391/build/pdf.worker.js';
 
         this.pages = [];
         this.scrollTop = {};
