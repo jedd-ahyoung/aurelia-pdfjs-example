@@ -27,7 +27,7 @@ System.register(['aurelia-framework', 'pdfjs-dist'], function (_export, _context
                     _classCallCheck(this, PdfDocument);
 
                     this.taskQueue = taskQueue;
-                    PDFJS.workerSrc = '/jspm_packages/npm/pdfjs-dist@1.5.391/build/pdf.worker.js';
+                    PDFJS.workerSrc = 'jspm_packages/npm/pdfjs-dist@1.5.391/build/pdf.worker.js';
 
                     this.pages = [];
                     this.scrollTop = {};
