@@ -1,5 +1,7 @@
 import {customElement, bindable, inject, bindingMode, TaskQueue} from 'aurelia-framework';
 import {PDFJS} from 'pdfjs-dist';
+import {SyntaxInterpreter} from 'aurelia-templating-binding';
+SyntaxInterpreter.prototype.trigger2 = SyntaxInterpreter.prototype.trigger;
 
 @customElement('pdf-document')
 @bindable({ name: 'url' })
@@ -112,6 +114,10 @@ export class PdfDocument {
 					this.taskQueue.queueMicroTask(() => {
                         renderObject.element.height = viewport.height;
                         renderObject.element.width = viewport.width;
+
+						if (renderObject.page.pageNumber === this.page) {
+							this.container.scrollTop = renderObject.element.offsetTop;
+						}
                     });
                 });
 
@@ -131,7 +137,7 @@ export class PdfDocument {
             });
     }
 
-    scrollHandler () {
+    pageHandler () {
         this.pages.forEach((page) => {
             page.then((renderObject) => {
                 if ((this.container.scrollTop + this.container.clientHeight) >= renderObject.element.offsetTop
