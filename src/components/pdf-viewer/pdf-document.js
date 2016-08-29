@@ -11,10 +11,12 @@ SyntaxInterpreter.prototype.trigger2 = SyntaxInterpreter.prototype.trigger;
 @inject(TaskQueue, Loader)
 export class PdfDocument {
     constructor (taskQueue, loader) {
-        this.taskQueue = taskQueue;
-
 		PDFJS.workerSrc = loader.normalizeSync('pdfjs-dist/build/pdf.worker.js');
 
+        this.taskQueue = taskQueue;
+		this.worker = new PDFJS.PDFWorker();
+
+		this.fingerprint = generateUniqueDomId();
         this.pages = [];
         this.scrollTop = {};
         this.offsetTop = {};
@@ -26,10 +28,14 @@ export class PdfDocument {
     detached () {
         return this.documentPending
             .then((pdf) => {
-                pdf.destroy();
-
-                // Destroy PDF worker as well.
-            });
+				if (pdf) {
+					pdf.destroy();
+				}
+				this.worker.destroy();
+            })
+			.catch(() => {
+				this.worker.destroy();
+            })
     }
 
     urlChanged (newValue, oldValue) {
@@ -45,7 +51,7 @@ export class PdfDocument {
 				if (pdf) {
 					pdf.destroy();
 				}
-				return PDFJS.getDocument(newValue);
+				return PDFJS.getDocument({ url: newValue, worker: this.worker });
 			})
             .then((pdf) => {
                 this.lastpage = pdf.numPages;
@@ -55,7 +61,7 @@ export class PdfDocument {
                     this.pages[i] = pdf.getPage(Number(i + 1))
                         .then((page) => {
                             var viewport = page.getViewport(this.scale);
-                            var element = document.getElementById('pdfCanvas' + page.pageNumber);
+                            var element = document.getElementById(`${this.fingerprint}-page${page.pageNumber}`);
 
                             this.taskQueue.queueMicroTask(() => {
                                 element.height = viewport.height;
@@ -173,6 +179,16 @@ export class PdfDocument {
                 });
             });
     }
+}
+
+var generateUniqueDomId = function () {
+    var S4 = function() {
+		return (((1 + Math.random()) * 0x10000) | 0)
+			.toString(16)
+			.substring(1);
+    };
+
+    return `_${S4()}${S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`;
 }
 
 var checkIfElementVisible = function (container, element) {

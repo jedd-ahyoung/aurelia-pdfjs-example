@@ -2,48 +2,59 @@
 
 export class PdfViewer {
     constructor () {
-		this.url = 'dist/documents/oversize_pdf_test_0.pdf';
-		this.draftUrl = 'dist/documents/oversize_pdf_test_0.pdf';
-        this.pageNumber = 1;
-        this.scale = 1;
-        this.lastpage = 1;
+		this.documents = [
+			{
+				url: 'dist/documents/oversize_pdf_test_0.pdf',
+				draftUrl: 'dist/documents/oversize_pdf_test_0.pdf',
+		        pageNumber: 1,
+		        scale: 1,
+		        lastpage: 1
+			},
+			{
+				url: 'dist/documents/pdf.pdf',
+				draftUrl: 'dist/documents/pdf.pdf',
+		        pageNumber: 1,
+		        scale: 1,
+		        lastpage: 1
+			}
+		];
     }
 
-	loadUrl () {
-		this.url = this.draftUrl;
+	loadUrl (document) {
+		document.url = document.draftUrl;
 	}
 
-    firstPage () {
-        this.pageNumber = 1;
+    firstPage (document) {
+        document.pageNumber = 1;
     }
 
-    nextPage () {
-        if (this.pageNumber >= this.lastpage) return;
+    nextPage (document) {
+        if (document.pageNumber >= document.lastpage) return;
 
-        this.pageNumber += 1;
+        document.pageNumber += 1;
     }
 
-    prevPage () {
-        if (this.pageNumber <= 1) return;
+    prevPage (document) {
+        if (document.pageNumber <= 1) return;
 
-        this.pageNumber -= 1;
+        document.pageNumber -= 1;
     }
 
-    lastPage () {
-        this.pageNumber = this.lastpage;
+    lastPage (document) {
+        document.pageNumber = document.lastpage;
     }
 
-    goToPage (page) {
-        if (page <= 0 || page > this.lastpage) return;
+    goToPage (document, page) {
+        if (page <= 0 || page > document.lastpage) return;
 
-        this.pageNumber = page;
+        document.pageNumber = page;
     }
 
-    zoomIn () {
-        this.scale = Number(this.scale) + 0.1;
+    zoomIn (document) {
+        document.scale = Number(document.scale) + 0.1;
     }
 
-    zoomOut () {
-        this.scale = Number(this.scale) - 0.1;
+    zoomOut (document) {
+        document.scale = Number(document.scale) - 0.1;
     }
 }
