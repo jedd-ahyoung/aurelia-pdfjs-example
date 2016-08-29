@@ -1,4 +1,4 @@
-import {customElement, bindable, inject, bindingMode, TaskQueue} from 'aurelia-framework';
+import {customElement, bindable, inject, bindingMode, TaskQueue, Loader} from 'aurelia-framework';
 import {PDFJS} from 'pdfjs-dist';
 import {SyntaxInterpreter} from 'aurelia-templating-binding';
 SyntaxInterpreter.prototype.trigger2 = SyntaxInterpreter.prototype.trigger;
@@ -8,11 +8,12 @@ SyntaxInterpreter.prototype.trigger2 = SyntaxInterpreter.prototype.trigger;
 @bindable({ name: 'page', defaultValue: 1, defaultBindingMode: bindingMode.twoWay })
 @bindable({ name: 'lastpage', defaultValue: 1, defaultBindingMode: bindingMode.twoWay })
 @bindable({ name: 'scale', defaultValue: 1, defaultBindingMode: bindingMode.twoWay })
-@inject(TaskQueue)
+@inject(TaskQueue, Loader)
 export class PdfDocument {
-    constructor (taskQueue) {
+    constructor (taskQueue, loader) {
         this.taskQueue = taskQueue;
-        PDFJS.workerSrc = 'jspm_packages/npm/pdfjs-dist@1.5.391/build/pdf.worker.js';
+
+		PDFJS.workerSrc = loader.normalizeSync('pdfjs-dist/build/pdf.worker.js');
 
         this.pages = [];
         this.scrollTop = {};
@@ -90,7 +91,6 @@ export class PdfDocument {
             return;
         }
 
-		console.log("threshold", Math.abs(newValue - oldValue));
 		if (Math.abs(newValue - oldValue) <= 1) return;
 
         this.pages[newValue - 1]
@@ -196,9 +196,7 @@ var render = function (renderPromise, scale) {
             if (renderObject.rendered) return Promise.resolve(renderObject);
             renderObject.rendered = true;
 
-            // console.log("page", renderObject.page);
             var viewport = renderObject.page.getViewport(scale);
-
             var context = renderObject.element.getContext('2d');
 
             return renderObject.page.render({
@@ -207,7 +205,6 @@ var render = function (renderPromise, scale) {
             })
                 .promise.then(() => {
                     return renderObject;
-                    // console.log("page", renderObject.page);
                 });
     });
 };
