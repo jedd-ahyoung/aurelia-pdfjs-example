@@ -18,49 +18,57 @@ System.register([], function (_export, _context) {
                 function PdfViewer() {
                     _classCallCheck(this, PdfViewer);
 
-                    this.url = 'dist/documents/oversize_pdf_test_0.pdf';
-                    this.draftUrl = 'dist/documents/oversize_pdf_test_0.pdf';
-                    this.pageNumber = 1;
-                    this.scale = 1;
-                    this.lastpage = 1;
+                    this.documents = [{
+                        url: 'dist/documents/oversize_pdf_test_0.pdf',
+                        draftUrl: 'dist/documents/oversize_pdf_test_0.pdf',
+                        pageNumber: 1,
+                        scale: 1,
+                        lastpage: 1
+                    }, {
+                        url: 'dist/documents/pdf.pdf',
+                        draftUrl: 'dist/documents/pdf.pdf',
+                        pageNumber: 1,
+                        scale: 1,
+                        lastpage: 1
+                    }];
                 }
 
-                PdfViewer.prototype.loadUrl = function loadUrl() {
-                    this.url = this.draftUrl;
+                PdfViewer.prototype.loadUrl = function loadUrl(document) {
+                    document.url = document.draftUrl;
                 };
 
-                PdfViewer.prototype.firstPage = function firstPage() {
-                    this.pageNumber = 1;
+                PdfViewer.prototype.firstPage = function firstPage(document) {
+                    document.pageNumber = 1;
                 };
 
-                PdfViewer.prototype.nextPage = function nextPage() {
-                    if (this.pageNumber >= this.lastpage) return;
+                PdfViewer.prototype.nextPage = function nextPage(document) {
+                    if (document.pageNumber >= document.lastpage) return;
 
-                    this.pageNumber += 1;
+                    document.pageNumber += 1;
                 };
 
-                PdfViewer.prototype.prevPage = function prevPage() {
-                    if (this.pageNumber <= 1) return;
+                PdfViewer.prototype.prevPage = function prevPage(document) {
+                    if (document.pageNumber <= 1) return;
 
-                    this.pageNumber -= 1;
+                    document.pageNumber -= 1;
                 };
 
-                PdfViewer.prototype.lastPage = function lastPage() {
-                    this.pageNumber = this.lastpage;
+                PdfViewer.prototype.lastPage = function lastPage(document) {
+                    document.pageNumber = document.lastpage;
                 };
 
-                PdfViewer.prototype.goToPage = function goToPage(page) {
-                    if (page <= 0 || page > this.lastpage) return;
+                PdfViewer.prototype.goToPage = function goToPage(document, page) {
+                    if (page <= 0 || page > document.lastpage) return;
 
-                    this.pageNumber = page;
+                    document.pageNumber = page;
                 };
 
-                PdfViewer.prototype.zoomIn = function zoomIn() {
-                    this.scale = Number(this.scale) + 0.1;
+                PdfViewer.prototype.zoomIn = function zoomIn(document) {
+                    document.scale = Number(document.scale) + 0.1;
                 };
 
-                PdfViewer.prototype.zoomOut = function zoomOut() {
-                    this.scale = Number(this.scale) - 0.1;
+                PdfViewer.prototype.zoomOut = function zoomOut(document) {
+                    document.scale = Number(document.scale) - 0.1;
                 };
 
                 return PdfViewer;
